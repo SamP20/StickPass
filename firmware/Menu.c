@@ -4,8 +4,11 @@
 #include "Board/Display.h"
 #include "Data/strings.h"
 
+#include "Crypto.h"
+
 static uint8_t menuID = 0;
 static uint8_t menuSelected = 0;
+static uint8_t count = 0;
 
 void Menu_UpdateTask(void) {
     uint8_t joyStatus = Joystick_GetKeyRepeat();
@@ -22,7 +25,9 @@ void Menu_UpdateTask(void) {
 
 void Menu_ScrollUp(void) {
     Display_Clear();
-    Display_WritePos_P(0,0, str_up);
+    char s[5];
+    snprintf(s, sizeof(s), "%.2x", count++);
+    Display_WritePos(0,0, s);
     Display_Update();
     //Menu_Redraw();
 }

@@ -109,6 +109,7 @@ void SetupHardware()
 	/* Hardware Initialization */
 	Joystick_Init();
 	Display_Init();
+	Crypto_Init();
 	USB_Init();
 }
 

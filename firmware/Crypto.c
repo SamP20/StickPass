@@ -6,11 +6,11 @@
 static uint8_t activeKey[CRYPTO_KEYSIZE_BYTES] = {0x00};
 static uint8_t passID = 0xff; //0xff indicates no valid key
 
-void Crypto_Init() {
+void Crypto_Init(void) {
     TWI_Init(TWI_BIT_PRESCALE_1, TWI_BITLENGTH_FROM_FREQ(1, CRYPTO_TWI_FREQ));
 }
 
-void Crypto_Disable() {
+void Crypto_Disable(void) {
     TWI_Disable();
 }
 
@@ -25,7 +25,7 @@ uint8_t Crypto_UnlockKey(uint32_t pass, uint8_t id, bool write) {
     data[2] = ((pass>>16) & 0xff);
     if(!write) id += 0x10;
     // Verify password command
-    Crypto_WriteCmd(0xBA, idx, 0x00, data, 3);
+    Crypto_WriteCmd(0xBA, id, 0x00, data, 3);
     // Dummy poll command
     Crypto_WriteCmd(0xB6, 0x00, 0x00, NULL, 0);
 
@@ -69,11 +69,11 @@ uint8_t Crypto_WriteCmd(uint8_t cmd, uint8_t addr1, uint8_t addr2, uint8_t* data
 }
 
 uint8_t Crypto_WriteSystem(uint8_t addr1, uint8_t addr2, uint8_t* data, uint8_t n) {
-    Crypto_WriteCmd(0xB4, addr1, addr2, data, n);
+    return Crypto_WriteCmd(0xB4, addr1, addr2, data, n);
 }
 
 uint8_t Crypto_WriteUser(uint8_t addr1, uint8_t addr2, uint8_t* data, uint8_t n) {
-    Crypto_WriteCmd(0xB0, addr1, addr2, data, n);
+    return Crypto_WriteCmd(0xB0, addr1, addr2, data, n);
 }
 
 uint8_t Crypto_ReadCmd(uint8_t* data, uint8_t n) {

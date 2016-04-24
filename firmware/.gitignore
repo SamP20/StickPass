@@ -41,3 +41,6 @@ lufa-LUFA-151115/
 *.map
 *.lst
 *.eep
+*.bin
+*.lss
+*.sym

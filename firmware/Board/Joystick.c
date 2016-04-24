@@ -1,38 +1,38 @@
 #include "Joystick.h"
 
 #include <avr/io.h>
+#include <stdbool.h>
 
 static uint8_t lastState = 0;
 
-static volatile uint8_t joyState = 0;
+static volatile bool debouncing = 0;
 static uint8_t debounceTimer = 0;
+static volatile uint8_t repeatState = 0;
 static uint16_t repeatCounter = 0;
 
 void Joystick_MillisecondElapsed(void) {
-    if(joyState & JOY_STATE_DEBOUNCING) {
+    if(debouncing) {
         if(debounceTimer>0) {
             debounceTimer--;
         }else{
-            joyState &= ~JOY_STATE_DEBOUNCING;
+            debouncing = false;
             debounceTimer = JOY_DEBOUNCE_DELAY;
         }
     }
 
-    if(joyState & JOY_STATE_WAIT_INTERVAL) {
-        joyState &= ~JOY_STATE_WAIT_INTERVAL;
-        repeatCounter = JOY_STATE_WAIT_INTERVAL;
-    }else if(joyState & JOY_STATE_WAIT_DELAY) {
-        joyState &= ~JOY_STATE_WAIT_DELAY;
+    if(repeatState == JOY_STATE_WAIT_INTERVAL) {
+        repeatState = 0;
+        repeatCounter = JOY_REPEAT_INTERVAL;
+    }else if(repeatState == JOY_STATE_WAIT_DELAY) {
+        repeatState = 0;
         repeatCounter = JOY_REPEAT_DELAY;
     }
 
     if(repeatCounter>0) {
         repeatCounter--;
-    }else{
-        joyState |= JOY_STATE_WAIT_FINISHED;
+        if(repeatCounter == 0)
+            repeatState = JOY_STATE_WAIT_FINISHED;
     }
-
-    if(repeatCounter>0) repeatCounter--;
 }
 
 uint8_t Joystick_ReadRaw(void) {
@@ -46,10 +46,10 @@ uint8_t Joystick_ReadRaw(void) {
 }
 
 uint8_t Joystick_GetStatus(void) {
-    if(!(joyState & JOY_STATE_DEBOUNCING)) {
+    if(!debouncing) {
         uint8_t state = Joystick_ReadRaw();
         if(state != lastState) {
-            joyState |= JOY_STATE_DEBOUNCING;
+            debouncing = true;
             lastState = state;
         }
     }
@@ -61,14 +61,12 @@ uint8_t Joystick_GetKeyRepeat(void) {
     uint8_t state = Joystick_GetStatus();
     if(state) {
         if(last) {
-            if(joyState & JOY_STATE_WAIT_FINISHED) {
-                joyState |= JOY_STATE_WAIT_INTERVAL;
-                joyState &= ~JOY_STATE_WAIT_FINISHED;
+            if(repeatState == JOY_STATE_WAIT_FINISHED) {
+                repeatState = JOY_STATE_WAIT_INTERVAL;
                 return state;
             }
         }else{
-            joyState |= JOY_STATE_WAIT_DELAY;
-            joyState &= ~JOY_STATE_WAIT_FINISHED;
+            repeatState = JOY_STATE_WAIT_DELAY;
             return state;
         }
     }

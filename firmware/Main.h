@@ -50,6 +50,7 @@
 		#include "Board/Display.h"
 		#include "Board/Joystick.h"
 		#include "Menu.h"
+		#include "Crypto.h"
 
 		#include <LUFA/Drivers/USB/USB.h>
 		#include <LUFA/Platform/Platform.h>
