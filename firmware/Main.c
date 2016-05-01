@@ -111,6 +111,7 @@ void SetupHardware()
 	Display_Init();
 	Crypto_Init();
 	USB_Init();
+	Menu_Init();
 }
 
 /** Event handler for the library USB Connection event. */
@@ -151,6 +152,7 @@ void EVENT_USB_Device_StartOfFrame(void)
 	HID_Device_MillisecondElapsed(&Keyboard_HID_Interface);
 	HID_Device_MillisecondElapsed(&Generic_HID_Interface);
 	Joystick_MillisecondElapsed();
+	Display_MillisecondElapsed();
 }
 
 /** HID class driver callback function for the creation of HID reports to the host.

@@ -3,6 +3,7 @@
 
 #include <avr/io.h>
 #include <stdint.h>
+#include <stdbool.h>
 
 #define DISPLAY_CONTRAST_CMD 0x81
 #define DISPLAY_ALLONRESUME_CMD 0xA4
@@ -25,7 +26,9 @@
 #define DISPLAY_COLS 64
 #define DISPLAY_PAGES 6
 
+#define DISPLAY_SCROLL_STEP 50
 
+void Display_MillisecondElapsed(void);
 void Display_Init(void);
 void Display_Command(uint8_t data);
 void Display_Data(uint8_t data);
@@ -34,10 +37,11 @@ void Display_ColAddr(uint8_t addr);
 void Display_Update(void);
 void Display_Clear(void);
 void Display_SetCursor(uint8_t row, uint8_t col);
-void Display_Write(const char *str);
-void Display_Write_P(const char *str);
-void Display_WritePos(uint8_t row, uint8_t col, const char *str);
-void Display_WritePos_P(uint8_t row, uint8_t col, const char *str);
+void Display_Write(const char *str, bool scroll);
+void Display_Write_P(const char *str, bool scroll);
+void Display_WritePos(uint8_t row, uint8_t col, const char *str, bool scroll);
+void Display_WritePos_P(uint8_t row, uint8_t col, const char *str, bool scroll);
+void Display_ResetScroll(void);
 
 
 #endif

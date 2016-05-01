@@ -62,6 +62,19 @@ static uint8_t screenmemory [] = {
 static uint8_t cursor_row = 0;
 static uint8_t cursor_col = 0;
 
+static volatile bool scroll_trig = false;
+static uint16_t scroll_counter = 0;
+static int16_t scroll_offset = -FONTWIDTH;
+static bool scroll_fwd = true;
+
+void Display_MillisecondElapsed(void) {
+	if(scroll_counter == 0) {
+		scroll_counter = DISPLAY_SCROLL_STEP;
+		scroll_trig = true;
+	}
+	scroll_counter--;
+}
+
 void Display_Init(void) {
     DDRB |= _BV(PB4) | _BV(PB5)| _BV(PB6); //DC, Rst and CS as output
     PORTB |= _BV(PB6); //Set CS high
@@ -141,39 +154,74 @@ void Display_SetCursor(uint8_t row, uint8_t col) {
     cursor_col = col;
 }
 
-void Display_Write(const char *str) {
-    uint8_t x = 0;
+void Display_Write(const char *str, bool scroll) {
+	int16_t skip = 0;
+	if(scroll) {
+		int16_t slen = strlen(str)*FONTWIDTH;
+		// Number of columns the string overflows the display
+		int16_t draw_ovf = slen+cursor_col-DISPLAY_COLS;
+
+		if(scroll_trig) {
+			scroll_trig = false;
+			if(scroll_offset <= -FONTWIDTH) {
+				scroll_fwd = true;
+			}
+			if(scroll_offset >= draw_ovf+FONTWIDTH) {
+				scroll_fwd = false;
+			}
+			if(scroll_fwd) {scroll_offset++;} else {scroll_offset--;}
+		}
+
+		if(draw_ovf == 0 || scroll_offset < 0) {
+			skip = 0;
+		}else if(scroll_offset >= draw_ovf) {
+			skip = draw_ovf;
+		}else{
+			skip = scroll_offset;
+		}
+
+	}
+	uint8_t x = 0;
     char c = *str;
     while(c != '\0') {
-        if(cursor_col+FONTWIDTH > DISPLAY_COLS || c == '\n') {
-            cursor_col = 0;
-            cursor_row = (cursor_row+1)%DISPLAY_PAGES;
-        }
-        if(c >= FONTSTART) {
+		if(skip>FONTWIDTH) {
+			skip-=FONTWIDTH;
+		}else{
             for(x=0;x<FONTWIDTH;x++) {
-                uint16_t idx = (uint16_t)(c-FONTSTART)*FONTWIDTH;
-                screenmemory[cursor_row*0x40+cursor_col+x] = pgm_read_byte(font6x8+idx+x);
-                //screenmemory[cursor_row*0x40+cursor_col+x] = font6x8[(uint16_t)x+fx];
+				if(skip>0) {
+					skip--;
+				} else {
+					uint16_t idx = (uint16_t)(c-FONTSTART)*FONTWIDTH;
+	                screenmemory[cursor_row*0x40+cursor_col] = pgm_read_byte(font6x8+idx+x);
+					cursor_col += 1;
+				}
+				if(cursor_col == DISPLAY_COLS) return;
             }
-            cursor_col += FONTWIDTH;
-        }
+		}
         c = *(++str);
     }
 }
 
-void Display_WritePos(uint8_t row, uint8_t col, const char *str) {
+void Display_WritePos(uint8_t row, uint8_t col, const char *str, bool scroll) {
 	Display_SetCursor(row, col);
-	Display_Write(str);
+	Display_Write(str, scroll);
 }
 
-void Display_Write_P(const char *str) {
-	char buffer[30];
-	strlcpy_P(buffer, str, 30);
-	Display_Write(buffer);
+void Display_Write_P(const char *str, bool scroll) {
+	char *buffer = malloc(strlen_P(str)+1);
+	strcpy_P(buffer, str);
+	Display_Write(buffer, scroll);
+	free(buffer);
 }
 
-void Display_WritePos_P(uint8_t row, uint8_t col, const char *str) {
-	char buffer[30];
-	strlcpy_P(buffer, str, 30);
-	Display_WritePos(row, col, buffer);
+void Display_WritePos_P(uint8_t row, uint8_t col, const char *str, bool scroll) {
+	char *buffer = malloc(strlen_P(str)+1);
+	strcpy_P(buffer, str);
+	Display_WritePos(row, col, buffer, scroll);
+	free(buffer);
+}
+
+void Display_ResetScroll(void) {
+	scroll_offset = -FONTWIDTH;
+	scroll_fwd = true;
 }

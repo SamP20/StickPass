@@ -1,17 +1,22 @@
 #ifndef MENU_H
 #define MENU_H
 
+#include <stdint.h>
 
-#define MENU_HOME_MENU 0
-#define MENU_LOGIN_MENU 1
-#define MENU_PASS_MENU 2
-
+void Menu_Init(void);
 void Menu_UpdateTask(void);
-void Menu_ScrollUp(void);
-void Menu_ScrollDown(void);
-void Menu_Enter(void);
-void Menu_Back(void);
-void Menu_Redraw(void);
+void Menu_Setmenu(int8_t id);
+
+void Menu_MenuInit(int8_t id);
+void Menu_MenuNav(uint8_t joyStatus);
+void Menu_MenuDraw(void);
+
+void Menu_TextEntryInit(uint8_t maxlen);
+void Menu_TextEntryNav(uint8_t joyStatus);
+void Menu_TextEntryConfirm(void);
+void Menu_TextEntryDraw(void);
+
+
 
 
 #endif

@@ -63,7 +63,7 @@ uint8_t Joystick_GetKeyRepeat(void) {
         if(last) {
             if(repeatState == JOY_STATE_WAIT_FINISHED) {
                 repeatState = JOY_STATE_WAIT_INTERVAL;
-                return state;
+                return state & ~JOY_PRESS; // Push button does not repeat
             }
         }else{
             repeatState = JOY_STATE_WAIT_DELAY;
