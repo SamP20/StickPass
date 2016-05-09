@@ -1,5 +1,6 @@
 #include "Display.h"
 
+#include <avr/io.h>
 #include <LUFA/Drivers/Peripheral/SPI.h>
 #include "../Data/font6x8.h"
 #include <string.h>
@@ -79,8 +80,6 @@ void Display_Init(void) {
     DDRB |= _BV(PB4) | _BV(PB5)| _BV(PB6); //DC, Rst and CS as output
     PORTB |= _BV(PB6); //Set CS high
 
-    SPI_Init(SPI_MODE_MASTER | SPI_SPEED_FCPU_DIV_2 |
-        SPI_SAMPLE_LEADING | SPI_SCK_LEAD_RISING);
     PORTB |= _BV(PB5); //Take display out of reset
 
     Display_Command(DISPLAY_OFF_CMD);

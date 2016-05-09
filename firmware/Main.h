@@ -49,11 +49,13 @@
 
 		#include "Board/Display.h"
 		#include "Board/Joystick.h"
+		#include "Board/Memory.h"
+		#include "Board/CryptoMem.h"
 		#include "Menu.h"
-		#include "Crypto.h"
 
 		#include <LUFA/Drivers/USB/USB.h>
 		#include <LUFA/Platform/Platform.h>
+		#include <LUFA/Drivers/Peripheral/SPI.h>
 
 	/* Macros: */
 

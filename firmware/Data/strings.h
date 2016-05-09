@@ -8,7 +8,11 @@ const char str_browse_logins[] PROGMEM = "Browse logins";
 const char str_add_login[] PROGMEM = "Add Login";
 const char str_settings[] PROGMEM = "Settings";
 const char str_search[] PROGMEM = "Search";
+const char str_testmem[] PROGMEM = "Test memory";
 const char str_placeholder[] PROGMEM = "Placeholder text.";
+
+const char str_pass[] PROGMEM = "Test pass";
+const char str_fail[] PROGMEM = "Test fail";
 
 const char str_sym[] PROGMEM = "0-9 & Sym";
 const char str_ae[] PROGMEM = "A-E";

@@ -5,6 +5,7 @@
 #include "strings.h"
 
 #define MENU_SEARCH_ID -1
+#define MENU_TESTMEMORY_ID -2
 
 
 typedef struct {
@@ -18,10 +19,10 @@ const menu_data_t menus[] PROGMEM =
 {
     // Home menu ID=0
     {
-        .itemcount = 4,
+        .itemcount = 5,
         .parent_menu = 0,
-        .strings =    {str_search_logins, str_browse_logins, str_add_login, str_settings},
-        .next_menus = {MENU_SEARCH_ID, 1, 2, 3}
+        .strings =    {str_search_logins, str_browse_logins, str_add_login, str_settings, str_testmem},
+        .next_menus = {MENU_SEARCH_ID, 1, 2, 3, MENU_TESTMEMORY_ID}
     },
     // Browse menu ID=1
     {
@@ -50,7 +51,21 @@ const menu_data_t menus[] PROGMEM =
         .parent_menu = 0,
         .strings = {str_placeholder},
         .next_menus = {0}
-    }
+    },
+    // Test Pass menu ID=5
+    {
+        .itemcount = 1,
+        .parent_menu = 0,
+        .strings = {str_pass},
+        .next_menus = {0}
+    },
+    // Test Fail menu ID=6
+    {
+        .itemcount = 1,
+        .parent_menu = 0,
+        .strings = {str_fail},
+        .next_menus = {0}
+    },
 
 };
 

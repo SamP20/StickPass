@@ -16,6 +16,8 @@ void Menu_TextEntryNav(uint8_t joyStatus);
 void Menu_TextEntryConfirm(void);
 void Menu_TextEntryDraw(void);
 
+void Menu_TestMemoryInit(void);
+
 
 
 

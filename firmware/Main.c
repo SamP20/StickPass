@@ -107,8 +107,10 @@ void SetupHardware()
 	clock_prescale_set(clock_div_1);
 
 	/* Hardware Initialization */
+	SPI_Init(SPI_MODE_MASTER | SPI_SPEED_FCPU_DIV_2 | SPI_SAMPLE_LEADING | SPI_SCK_LEAD_RISING);
 	Joystick_Init();
 	Display_Init();
+	Memory_Init();
 	Crypto_Init();
 	USB_Init();
 	Menu_Init();

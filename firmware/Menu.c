@@ -4,10 +4,9 @@
 #include <string.h>
 #include "Board/Joystick.h"
 #include "Board/Display.h"
+#include "Board/Memory.h"
 #include "Data/menus.h"
 #include "Data/font6x8.h"
-
-#include "Crypto.h"
 
 static int8_t menuID = 0;
 static uint8_t menuSelected = 0;
@@ -52,6 +51,9 @@ void Menu_Setmenu(int8_t id) {
         switch(menuID) {
             case MENU_SEARCH_ID:
             Menu_TextEntryInit(15);
+            break;
+            case MENU_TESTMEMORY_ID:
+            Menu_TestMemoryInit();
             break;
         }
     }
@@ -188,4 +190,20 @@ void Menu_TextEntryDraw(void) {
     Display_WritePos(5,(entryCursor-skip)*FONTWIDTH, digit, false);
 
     Display_Update();
+}
+
+void Menu_TestMemoryInit(void) {
+    Memory_SectorErase(0);
+    uint8_t data[] = {0xaa, 0xff, 0xcc, 0xdd};
+    Memory_PageProgram(0, data, sizeof(data));
+    uint8_t data2[4];
+    Memory_Read(0, data2, sizeof(data2));
+    uint8_t i;
+    for(i=0;i<sizeof(data);i++) {
+        if(data[i] != data2[i]) {
+            Menu_Setmenu(6); // Test fail menu
+            return;
+        }
+    }
+    Menu_Setmenu(5); // Test pass menu
 }
